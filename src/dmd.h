@@ -34,4 +34,23 @@ void dmd_write_byte(uint8_t byte);
 void dmd_write_max(uint8_t address, uint8_t data);
 void dmd_oe_state(bool_e state);
 void delayus(uint32_t timer);
+uint32_t DWT_Delay_Init(void);
+
+
+
+/**
+ * @brief  This function provides a delay (in microseconds)
+ * @param  microseconds: delay in microseconds
+ */
+__STATIC_INLINE void DWT_Delay_us(volatile uint32_t microseconds)
+{
+  uint32_t clk_cycle_start = DWT->CYCCNT;
+
+  /* Go to number of cycles for system */
+  microseconds *= (HAL_RCC_GetHCLKFreq() / 1000000);
+
+  /* Delay till end */
+  while ((DWT->CYCCNT - clk_cycle_start) < microseconds);
+}
+
 #endif /* INC_DMD_H_ */
