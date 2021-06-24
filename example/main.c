@@ -1,27 +1,7 @@
-/* USER CODE BEGIN Header */
-/**
- ******************************************************************************
- * @file           : main.c
- * @brief          : Main program body
- ******************************************************************************
- * @attention
- *
- * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
- * All rights reserved.</center></h2>
- *
- * This software component is licensed by ST under BSD 3-Clause license,
- * the "License"; You may not use this file except in compliance with the
- * License. You may obtain a copy of the License at:
- *                        opensource.org/licenses/BSD-3-Clause
- *
- ******************************************************************************
- */
-/* USER CODE END Header */
-/* Includes ------------------------------------------------------------------*/
+ 
 #include "main.h"
 
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
+ 
 #include "dmd.h"
 /* USER CODE END Includes */
 
@@ -65,8 +45,7 @@ void new_Delay(int delas) {
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+ 
 void TIM8_UP_TIM13_IRQHandler(void) {
 	/* USER CODE BEGIN TIM8_UP_TIM13_IRQn 0 */
 	dmd_call_data();
@@ -80,8 +59,7 @@ int intToAscii(int number) {
 	return '0' + number;
 }
 char counter[3];
-/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
+ 
 /* USER CODE END 0 */
 
 /**
@@ -117,20 +95,13 @@ int main(void) {
 	/* USER CODE BEGIN 2 */
 
 	HAL_TIM_Base_Start_IT(&htim13);
-
-	/*for (int j = 0; j < 4; j++) {
-	 for (int i = 0; i < 16; i++) {
-
-	 data[i][j] = 0x00;
-
-	 }
-	 }*/
+ 
 
 	dmd_init( GPIOA, GPIO_PIN_7, GPIO_PIN_5, GPIO_PIN_6, GPIO_PIN_3, GPIO_PIN_1,
 	GPIO_PIN_2);
 	DWT_Delay_Init();
 	dmd_config(1, 1);
-	//HAL_TIM_Base_Start_IT(&htim13);
+ 
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -139,7 +110,7 @@ int main(void) {
 	while (1) {
 
 		/* USER CODE BEGIN 3 */
-		//__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 100);
+		 
 		for (int i = 0; i < 32; i++) {
 			counter[0] = intToAscii(i / 10);
 			counter[1] = intToAscii(i % 10);
@@ -149,7 +120,7 @@ int main(void) {
 			dmd_clear();
 		}
 
-		/* USER CODE END WHILE */
+	 
 
 	}
 
