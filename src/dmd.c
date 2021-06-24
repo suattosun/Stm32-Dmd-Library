@@ -1,9 +1,4 @@
-/*
- * dmd.c
- *
- *  Created on: 19 Haz 2021
- *      Author: SUAT-ARGE
- */
+ 
 #include "dmd.h"
 #include "stm32f4xx_hal.h"
 #include <stdlib.h>
