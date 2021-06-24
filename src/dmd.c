@@ -1,4 +1,9 @@
- 
+/*
+ * dmd.c
+ *
+ *  Created on: 19 Haz 2021
+ *      Author: SUAT-ARGE
+ */
 #include "dmd.h"
 #include "stm32f4xx_hal.h"
 #include <stdlib.h>
@@ -11,9 +16,9 @@ uint8_t first_char = 4;
 uint8_t char_width = 2;
 uint8_t char_height = 3;
 
-uint8_t dmd_max_column = 15;
-uint8_t dmd_max_row_part = 3;
-uint8_t config_start_column = 4;
+uint8_t dmd_max_block = 15;
+uint8_t dmd_max_column_part = 3;
+uint8_t config_start_row = 4;
 uint8_t **data;
 GPIO_TypeDef *GPIO_PORT;
 
@@ -32,19 +37,19 @@ void dmd_init(GPIO_TypeDef *gpio_port, uint16_t data_pin, uint16_t clk_pin,
 }
 void dmd_clear() {
 	for (int j = 0; j < max_point_matrix; j++) {
-		for (int i = 0; i < dmd_max_column; i++) {
+		for (int i = 0; i < dmd_max_block; i++) {
 			data[i][j] = 0;
 		}
 	}
 }
-void dmd_config(uint8_t column, uint8_t row) {
-	dmd_max_column = ((dmd_max_column + 1) * column);
-	dmd_max_row_part = ((dmd_max_row_part + 1) * row) - 1;
-	max_point_matrix = dmd_max_row_part + 1;
+void dmd_config(uint8_t row, uint8_t column) {
+	dmd_max_block = ((dmd_max_block + 1) * row);
+	dmd_max_column_part = ((dmd_max_column_part + 1) * column) - 1;
+	max_point_matrix = dmd_max_column_part + 1;
 
-	data = (uint8_t**) malloc((dmd_max_column) * sizeof(uint8_t*));
+	data = (uint8_t**) malloc((dmd_max_block) * sizeof(uint8_t*));
 
-	for (int i = 0; i < (dmd_max_column); i++) {
+	for (int i = 0; i < (dmd_max_block); i++) {
 		data[i] = (uint8_t*) malloc((max_point_matrix) * sizeof(uint8_t));
 	}
 	dmd_clear();
@@ -54,7 +59,7 @@ void dmd_call_data() {
 
 	for (int j = 0; j < max_point_matrix; j++) {
 		dmd_oe_state(false);
-		for (int i = 0; i < dmd_max_column; i++) {
+		for (int i = 0; i < dmd_max_block; i++) {
 			dmd_write_max(j, (data[i][j]));
 		}
 		dmd_oe_state(true);
@@ -67,33 +72,33 @@ void dmd_call_data() {
 static int select_font(int array_index) {
 	return System5x7[array_index];
 }
-void dmd_write_string(char *str, uint8_t start_column, uint8_t start_row) {
+void dmd_write_string(char *str, uint8_t start_row, uint8_t start_column) {
 
 	while (*str) {
-		dmd_write_char(*str++, start_column, start_row);
-		start_column += (select_font(char_width) + 1);
+		dmd_write_char(*str++, start_row, start_column);
+		start_row += (select_font(char_width) + 1);
 
 	}
 
 }
 
-void dmd_write_char(char data, uint8_t column, uint8_t row) {
+void dmd_write_char(char data, uint8_t row, uint8_t column) {
 
 	uint16_t ascii_code_start = ((data - select_font(first_char))
 			* select_font(char_width)) + (select_font(char_width) + 1);
 	uint16_t ascii_code = ascii_code_start + select_font(char_width);
-	uint16_t ascii_code_32 = ascii_code - config_start_column - column;
+	uint16_t ascii_code_32 = ascii_code - config_start_row - row;
 	for (int array_index = ascii_code_start; array_index < ascii_code;
 			array_index++)
 		dmd_write_char_to_byte(select_font(array_index),
-				array_index - ascii_code_32, row);
+				array_index - ascii_code_32, column);
 
 }
-void dmd_write_char_to_byte(uint8_t data, uint8_t column, uint8_t row) {
-	uint8_t last_row = row + select_font(char_height);
-	column++;
-	for (int j = last_row; j >= row; j--) {
-		dmd_write_pixel(column, j, 0x80 & data);
+void dmd_write_char_to_byte(uint8_t data, uint8_t row, uint8_t column) {
+	uint8_t last_column = column + select_font(char_height);
+	row++;
+	for (int j = last_column; j >= column; j--) {
+		dmd_write_pixel(row, j, 0x80 & data);
 		data = data << 1;
 	}
 
@@ -101,7 +106,7 @@ void dmd_write_char_to_byte(uint8_t data, uint8_t column, uint8_t row) {
 
 void dmd_write_pixel(unsigned int bX, unsigned int bY, bool_e bPixel) {
 
-	if (bX >= (dmd_max_column * DMD_WIDTH)
+	if (bX >= (dmd_max_block * DMD_WIDTH)
 			|| bY >= (max_point_matrix * DMD_HEIGHT)) {
 		return;
 	}
