@@ -56,7 +56,11 @@ static void MX_TIM13_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM2_Init(void);
 /* USER CODE BEGIN PFP */
+void new_Delay(int delas) {
 
+	HAL_Delay(1);
+
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -64,16 +68,18 @@ static void MX_TIM2_Init(void);
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 void TIM8_UP_TIM13_IRQHandler(void) {
-
+	/* USER CODE BEGIN TIM8_UP_TIM13_IRQn 0 */
 	dmd_call_data();
-
+	/* USER CODE END TIM8_UP_TIM13_IRQn 0 */
 	HAL_TIM_IRQHandler(&htim13);
+	/* USER CODE BEGIN TIM8_UP_TIM13_IRQn 1 */
 
+	/* USER CODE END TIM8_UP_TIM13_IRQn 1 */
 }
 int intToAscii(int number) {
 	return '0' + number;
 }
-char asd[3];
+char counter[3];
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 /* USER CODE END 0 */
@@ -122,8 +128,8 @@ int main(void) {
 
 	dmd_init( GPIOA, GPIO_PIN_7, GPIO_PIN_5, GPIO_PIN_6, GPIO_PIN_3, GPIO_PIN_1,
 	GPIO_PIN_2);
-
-	dmd_config(3, 1);
+	DWT_Delay_Init();
+	dmd_config(1, 1);
 	//HAL_TIM_Base_Start_IT(&htim13);
 	/* USER CODE END 2 */
 
@@ -135,13 +141,11 @@ int main(void) {
 		/* USER CODE BEGIN 3 */
 		//__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, 100);
 		for (int i = 0; i < 32; i++) {
-			asd[0] = intToAscii(i / 10);
-			asd[1] = intToAscii(i % 10);
-			dmd_write_string(asd, 0, 0);
-			dmd_write_char(data, column, row);
-			dmd_write_string(str, start_column, start_row);
-			dmd_write_pixel(bX, bY, bPixel);
-			HAL_Delay(25);
+			counter[0] = intToAscii(i / 10);
+			counter[1] = intToAscii(i % 10);
+			dmd_write_string(counter, 0, 0);
+
+			HAL_Delay(100);
 			dmd_clear();
 		}
 
