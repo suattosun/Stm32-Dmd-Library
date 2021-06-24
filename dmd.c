@@ -168,7 +168,7 @@ void dmd_get_point_y_data(uint8_t column_first_result) {
 
 void dmd_sclk_config() {
 	HAL_GPIO_WritePin(GPIO_PORT, SCLK_PIN, GPIO_PIN_SET);
-	delayus(20000);
+	DWT_Delay_us(1000);
 	HAL_GPIO_WritePin(GPIO_PORT, SCLK_PIN, GPIO_PIN_RESET);
 
 }
@@ -200,7 +200,33 @@ void dmd_write_max(uint8_t address, uint8_t data) {
 void dmd_oe_state(bool_e state) {
 	HAL_GPIO_WritePin(GPIO_PORT, OE_PIN, (GPIO_PinState) state);
 }
-void delayus(uint32_t timer) {
-	while (timer--)
-		;
+
+uint32_t DWT_Delay_Init(void) {
+  /* Disable TRC */
+  CoreDebug->DEMCR &= ~CoreDebug_DEMCR_TRCENA_Msk; // ~0x01000000;
+  /* Enable TRC */
+  CoreDebug->DEMCR |=  CoreDebug_DEMCR_TRCENA_Msk; // 0x01000000;
+
+  /* Disable clock cycle counter */
+  DWT->CTRL &= ~DWT_CTRL_CYCCNTENA_Msk; //~0x00000001;
+  /* Enable  clock cycle counter */
+  DWT->CTRL |=  DWT_CTRL_CYCCNTENA_Msk; //0x00000001;
+
+  /* Reset the clock cycle counter value */
+  DWT->CYCCNT = 0;
+
+     /* 3 NO OPERATION instructions */
+     __ASM volatile ("NOP");
+     __ASM volatile ("NOP");
+  __ASM volatile ("NOP");
+
+  /* Check if clock cycle counter has started */
+     if(DWT->CYCCNT)
+     {
+       return 0; /*clock cycle counter started*/
+     }
+     else
+  {
+    return 1; /*clock cycle counter not started*/
+  }
 }
