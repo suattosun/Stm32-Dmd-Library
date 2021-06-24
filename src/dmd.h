@@ -1,9 +1,4 @@
-/*
- * dmd.h
- *
- *  Created on: 19 Haz 2021
- *      Author: SUAT-ARGE
- */
+
 #include "stm32f4xx_hal.h"
 #include "SystemFont5x7.h"
 #include "Arial14.h"
